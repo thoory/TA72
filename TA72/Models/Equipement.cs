@@ -4,19 +4,23 @@ using System.Text;
 
 namespace TA72.Models
 {
-    class Equipement : Object
+    class Equipement : Module
     {
-        public String type { get; private set; }
-        public String os { get; private set; }
-        public String version { get; private set; }
-        public String ip { get; private set; }
-        public String mac { get; private set; }
-        public bool isActive { get; private set; }
-        public DateTime lastUpdate { get; private set; }
+        public string type { get; internal set; }
+        public string os { get; internal set; }
+        public string version { get; internal set; }
+        public string ip { get; internal set; }
+        public string mac { get; internal set; }
+        public bool isActive { get; internal set; }
+        public DateTime lastUpdate { get; internal set; }
 
-        public Equipement(int id, string name, int posX, int posY, int imageId, string type, string os, string version, string ip, string mac, bool isActive, DateTime lastUpdate) : base(id, name, posX, posY, imageId)
+        public Equipement(string name) : base(name)
         {
-            this.id = id;
+            this.name = name;
+            this.lastUpdate = DateTime.Now;
+        }
+        public Equipement(string name, int posX, int posY, int imageId, string type, string os, string version, string ip, string mac) : base(name, posX, posY, imageId)
+        {
             this.name = name;
             this.posX = posX;
             this.posY = posY;
@@ -26,8 +30,7 @@ namespace TA72.Models
             this.version = version;
             this.ip = ip;
             this.mac = mac;
-            this.isActive = isActive;
-            this.lastUpdate = lastUpdate;
+            this.lastUpdate = DateTime.Now;
         }
 
         public override bool Equals(object obj)
