@@ -6,18 +6,19 @@ namespace TA72.Models
 {
     class Project
     {
-        public string name { get; set; }
-        public string desc { get; set; }
-        public DateTime creationDate { get; set; }
-        public DateTime lastupdate { get; set; }
-        public String path { get; set; }
+        public string Name { get; set; }
+        public string Desc { get; set; }
+        public DateTime CreationDate { get; set; }
+        public DateTime Lastupdate { get; set; }
+        public List<Equipement> Equipements { get; set; }
 
         public Project(string name, string desc)
         {
-            this.name = name;
-            this.desc = desc;
-            this.creationDate = DateTime.Now;
-            this.lastupdate = DateTime.Now;
+            this.Name = name;
+            this.Desc = desc;
+            this.CreationDate = DateTime.Now;
+            this.Lastupdate = DateTime.Now;
+            this.Equipements = new List<Equipement>();
         }
 
         public void save()
@@ -29,19 +30,19 @@ namespace TA72.Models
         public override bool Equals(object obj)
         {
             return obj is Project project &&
-                   name == project.name &&
-                   desc == project.desc &&
-                   creationDate == project.creationDate &&
-                   lastupdate == project.lastupdate;
+                   Name == project.Name &&
+                   Desc == project.Desc &&
+                   CreationDate == project.CreationDate &&
+                   Lastupdate == project.Lastupdate;
         }
         public override int GetHashCode()
         {
-            return HashCode.Combine(name, desc, creationDate, lastupdate);
+            return HashCode.Combine(Name, Desc, CreationDate, Lastupdate);
         }
 
         public override string ToString()
         {
-            return "Projet " + this.name + ", creation: " + this.creationDate + " dernière update: " + this.lastupdate + ", " + this.desc;
+            return "Projet " + this.Name + ", creation: " + this.CreationDate + " dernière update: " + this.Lastupdate + ", " + this.Desc;
         }
     }
 }

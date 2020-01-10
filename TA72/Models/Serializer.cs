@@ -14,7 +14,7 @@ namespace TA72.Models
         public void save(Project p)
         {
             Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
-            dlg.FileName = p.name;
+            dlg.FileName = p.Name;
             dlg.Filter = "json (*.json)|*.json"; ;
 
             Nullable<bool> result = dlg.ShowDialog();

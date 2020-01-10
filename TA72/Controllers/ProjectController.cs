@@ -17,24 +17,40 @@ namespace TA72.Controllers
             return p;
         }
 
+        public void AddEquipement(Project project, Equipement equipement)
+        {
+            this.GetEquipements(project).Add(equipement);
+        }
+        public void RemoveEquipement(Project project, Equipement equipement)
+        {
+            this.GetEquipements(project).Remove(equipement);
+        }
+        public List<Equipement> GetEquipements(Project project)
+        {
+            List<Equipement> equipements = new List<Equipement>();
+            if (project != null)
+                 equipements = project.Equipements;
+            return equipements;
+        }
+
         public String getName(Project p)
         {
-            return p.name;
+            return p.Name;
         }
         public String getDesc(Project p)
         {
-            return p.desc;
+            return p.Desc;
         }
 
         public void setName(Project p, String name)
         {
-            p.name = name;
-            p.lastupdate = DateTime.Now;
+            p.Name = name;
+            p.Lastupdate = DateTime.Now;
         }
         public void setDesc(Project p, String desc)
         {
-            p.desc = desc;
-            p.lastupdate = DateTime.Now;
+            p.Desc = desc;
+            p.Lastupdate = DateTime.Now;
         }
         public void save(Project p)
         {
