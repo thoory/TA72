@@ -34,27 +34,9 @@ namespace TA72
 
         private void LoadProject(object sender, RoutedEventArgs e)
         {
-            EquipementController equipCtrl = new EquipementController();
-            Equipement e1 = equipCtrl.Create("equip1", p);
-            Equipement e2 = equipCtrl.Create("equip2", p);
-            Equipement e3 = equipCtrl.Create("equip3", p);
-
-            foreach (Equipement equ in projCtrl.GetEquipements(p))
-            {
-                System.Diagnostics.Trace.WriteLine(equ.name);
-            }
-
-            projCtrl.RemoveEquipement(p, e2);
-            Equipement e4 = equipCtrl.Create("equip4", p);
-            projCtrl.AddEquipement(p, e4);
-            foreach (Equipement equ in projCtrl.GetEquipements(p))
-            {
-                System.Diagnostics.Trace.WriteLine(equ.name);
-            }
-
-            /*OpenFileDialog openFileDialog = new OpenFileDialog();
+            OpenFileDialog openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == true)
-                p = projCtrl.load(openFileDialog.FileName);*/
+                p = projCtrl.load(openFileDialog.FileName);
         }
     }
 }

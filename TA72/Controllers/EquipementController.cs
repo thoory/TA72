@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using System.Text;
 using TA72.Models;
 
@@ -81,14 +82,18 @@ namespace TA72.Controllers
         {
             return equipement.mac;
         }
-
-        public void SetIsActive(Equipement equipement, Boolean isActive)
-        {
-            equipement.isActive = isActive;
-            equipement.lastUpdate = DateTime.Now;
-        }
         public Boolean GetIsActive(Equipement equipement)
         {
+            equipement.isActive = false;
+            Ping ping = new Ping();
+            string ip = this.GetIp(equipement);
+            PingReply result = ping.Send(ip);
+
+            if (result.Status == IPStatus.Success)
+            {
+                equipement.isActive = true;
+                equipement.lastUpdate = DateTime.Now;
+            }
             return equipement.isActive;
         }
     }
