@@ -9,13 +9,13 @@ using TA72.Models;
 namespace TA72
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for HomeWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class HomeWindow : Window
     {
         private ProjectController projCtrl = new ProjectController();
         private Project p;
-        public MainWindow()
+        public HomeWindow()
         {
             InitializeComponent();
         }
