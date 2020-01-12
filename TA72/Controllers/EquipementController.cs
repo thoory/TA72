@@ -17,6 +17,7 @@ namespace TA72.Controllers
             projectController.AddEquipement(project, equipement);
             return equipement;
         }
+
         public Equipement Delete(Equipement equipement, Project project)
         {
             ProjectController projectController = new ProjectController();
@@ -65,8 +66,12 @@ namespace TA72.Controllers
         }
         public void SetIp(Equipement equipement, String ip)
         {
-            equipement.ip = ip;
-            equipement.lastUpdate = DateTime.Now;
+            NetworkController netCtrl = new NetworkController();
+            if (netCtrl.CheckIpV4(ip) == true)
+            {
+                equipement.ip = ip;
+                equipement.lastUpdate = DateTime.Now;
+            }
         }
         public String GetIp(Equipement equipement)
         {
