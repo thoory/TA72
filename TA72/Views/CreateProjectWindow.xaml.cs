@@ -1,25 +1,30 @@
-﻿using Microsoft.Win32;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Text;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 using TA72.Controllers;
 using TA72.Models;
 
-namespace TA72
+namespace TA72.Views
 {
     /// <summary>
-    /// Interaction logic for HomeWindow.xaml
+    /// Logique d'interaction pour CreateProjectWindow.xaml
     /// </summary>
-    public partial class HomeWindow : Window
+    public partial class CreateProjectWindow : Window
     {
         private ProjectController projCtrl = new ProjectController();
         private Project p;
-        public HomeWindow()
+        public CreateProjectWindow()
         {
             InitializeComponent();
         }
-
         private void createProject(object sender, RoutedEventArgs e)
         {
             String name, description;
@@ -30,13 +35,6 @@ namespace TA72
             p = projCtrl.create(name, description);
 
             projCtrl.save(p);
-        }
-
-        private void LoadProject(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            if (openFileDialog.ShowDialog() == true)
-                p = projCtrl.load(openFileDialog.FileName);
         }
     }
 }
