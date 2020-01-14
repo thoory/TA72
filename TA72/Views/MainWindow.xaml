@@ -5,10 +5,21 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TA72.Views"
         mc:Ignorable="d"
-        Title="Hector Network Assistant" Height="450" Width="800">
+        Title="{Binding Name, StringFormat=Hector Network Assistant - {0}}" Height="450" Width="800">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="auto"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" ></RowDefinition>
+            <RowDefinition Height="*" ></RowDefinition>
+            <RowDefinition Height="auto" ></RowDefinition>
+        </Grid.RowDefinitions>
+
         <!-- Menu. -->
-        <DockPanel>
+        <DockPanel Grid.Column="1" Grid.ColumnSpan="2">
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="_File">
                     <MenuItem Header="_New" Click="mnuNew_Click"/>
@@ -18,8 +29,26 @@
                     <MenuItem Header="Save as" Click="mnuSaveAs_Click"/>
                 </MenuItem>
             </Menu>
-            <TextBox AcceptsReturn="True" />
         </DockPanel>
 
+        <!-- Scan -->
+        <TabControl TabStripPlacement="Top" Grid.Row="1" Grid.Column="2">
+            <TabItem Header="Network scan" >
+                <DataGrid Name="DataGridScanNet" AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Equipement" Binding="{Binding Prenom}" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Ip" Binding="{Binding Nom}" IsReadOnly="True"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+            <TabItem Header="Network scan" >
+                <DataGrid Name="DataGridScanPort" AutoGenerateColumns="False" SelectionChanged="DataGridScanPort_SelectionChanged">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Equipement" Binding="{Binding TODO}" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Port" Binding="{Binding TODO}" IsReadOnly="True"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>

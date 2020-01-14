@@ -15,16 +15,18 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="200" />
-            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="100" />
+            <ColumnDefinition Width="10" />
+            <ColumnDefinition Width="100" />
         </Grid.ColumnDefinitions>
 
         <TextBlock>New project</TextBlock>
         <TextBlock Grid.Row="1">Name:</TextBlock>
-        <TextBox Grid.Row="1" Grid.Column="1" Name="projName"></TextBox>
+        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Name="projName"></TextBox>
         <TextBlock Grid.Row="2">Description:</TextBlock>
-        <TextBox Grid.Row="2" Grid.Column="1" Name="projDesc"></TextBox>
+        <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3"  Name="projDesc"></TextBox>
         <Button Grid.Row="3" Grid.Column="1" Click="createProject">create</Button>
+        <Button Grid.Row="3" Grid.Column="3" Click="cancel">cancel</Button>
 
     </Grid>
 </Window>

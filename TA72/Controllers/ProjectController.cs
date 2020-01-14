@@ -1,68 +1,79 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 using TA72.Models;
 
 namespace TA72.Controllers
 {
-    class ProjectController
+    class ProjectController : INotifyPropertyChanged
     {
-        public ProjectController(){}
-
-        public Project create(string name, string desc) {
-            Project p;
-
-            p = new Project(name, desc);
-
-            return p;
+        Project _project;
+        public ProjectController()
+        {
+            _project = new Project("Unknown", "Uknown");
         }
 
-        public void AddEquipement(Project project, Equipement equipement)
+        #region Properties
+        public Project Project
         {
-            this.GetEquipements(project).Add(equipement);
-        }
-        public void RemoveEquipement(Project project, Equipement equipement)
-        {
-            this.GetEquipements(project).Remove(equipement);
-        }
-        public List<Equipement> GetEquipements(Project project)
-        {
-            List<Equipement> equipements = new List<Equipement>();
-            if (project != null)
-                 equipements = project.Equipements;
-            return equipements;
+            get { return _project; }
+            set { _project = value; }
         }
 
-        public String getName(Project p)
+        public List<Equipement> Equipements
         {
-            return p.Name;
-        }
-        public String getDesc(Project p)
-        {
-            return p.Desc;
+            get { return Project.Equipements; }
+            set {Project.Equipements = value; }
         }
 
-        public void setName(Project p, String name)
+        public string Name
         {
-            p.Name = name;
-            p.Lastupdate = DateTime.Now;
-        }
-        public void setDesc(Project p, String desc)
-        {
-            p.Desc = desc;
-            p.Lastupdate = DateTime.Now;
-        }
-        public void save(Project p)
-        {
-            p.save();
+            get { return Project.Name; }
+            set
+            { 
+                Project.Name = value;
+                Project.Lastupdate = DateTime.Now;
+                RaisePropertyChanged("Name");
+            }
         }
 
-        public Project load(String path)
+        public string Description
+        {
+            get { return Project.Desc; }
+            set { Project.Desc = value; }
+        }
+        #endregion
+
+        #region Functions
+        public void AddEquipement(Equipement equipement)
+        {
+            Project.Equipements.Add(equipement);
+        }
+        public void RemoveEquipement(Equipement equipement)
+        {
+            Project.Equipements.Remove(equipement);
+        }
+        public void save()
         {
             Serializer serializer = new Serializer();
-            Project p = serializer.load(path);
-
-            return p;
+            serializer.save(Project);
         }
+
+        public void load(String path)
+        {
+            Serializer serializer = new Serializer();
+            Project = serializer.load(path);
+        }
+        #endregion
+
+        #region INotifyOrioertyChanged
+        public event PropertyChangedEventHandler PropertyChanged;
+        
+        private void RaisePropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion
     }
 }

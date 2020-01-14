@@ -14,13 +14,13 @@ namespace TA72.Controllers
         {
             ProjectController projectController = new ProjectController();
             Equipement equipement = new Equipement(name);
-            projectController.AddEquipement(project, equipement);
+            //projectController.AddEquipement(project, equipement);
             return equipement;
         }
         public Equipement Delete(Equipement equipement, Project project)
         {
             ProjectController projectController = new ProjectController();
-            projectController.RemoveEquipement(project, equipement);
+            //projectController.RemoveEquipement(project, equipement);
             return equipement;
         }
 

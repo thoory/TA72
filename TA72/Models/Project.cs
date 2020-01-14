@@ -21,12 +21,6 @@ namespace TA72.Models
             this.Equipements = new List<Equipement>();
         }
 
-        public void save()
-        {
-            Serializer serializer = new Serializer();
-            serializer.save(this);
-        }
-
         public override bool Equals(object obj)
         {
             return obj is Project project &&
