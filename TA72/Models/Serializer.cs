@@ -1,9 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Win32;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.Json;
+using TA72.Controllers;
 
 namespace TA72.Models
 {
@@ -11,7 +13,7 @@ namespace TA72.Models
     {
         public Serializer() { }
 
-        public void save(Project p)
+        public string Save(Project p)
         {
             Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
             dlg.FileName = p.Name;
@@ -24,14 +26,25 @@ namespace TA72.Models
                 String jsonString = JsonConvert.SerializeObject(p);
                 File.WriteAllText(dlg.FileName, jsonString);
             }
+            return dlg.FileName;
         }
 
-        public Project load(String path)
+        public string Save(Project p, string path)
         {
-            String sourceFile = System.IO.File.ReadAllText(path);
-            Project p = JsonConvert.DeserializeObject<Project>(sourceFile);
+            File.WriteAllText(path, JsonConvert.SerializeObject(p));
+            return path;
+        }
 
-            return p;
+        public void Load(ProjectController projectController)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "json (*.json)|*.json";
+            if (openFileDialog.ShowDialog() == true)
+            {
+                String sourceFile = System.IO.File.ReadAllText(openFileDialog.FileName);
+                projectController.Project = JsonConvert.DeserializeObject<Project>(sourceFile);
+                projectController.Path = openFileDialog.FileName;
+            }
         }
     }
 }

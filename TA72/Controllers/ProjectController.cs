@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
@@ -8,18 +9,13 @@ namespace TA72.Controllers
 {
     class ProjectController : INotifyPropertyChanged
     {
-        Project _project;
         public ProjectController()
         {
-            _project = new Project("Unknown", "Uknown");
+            Project = new Project("Unknown", "Uknown");
         }
 
         #region Properties
-        public Project Project
-        {
-            get { return _project; }
-            set { _project = value; }
-        }
+        public Project Project { get; set; }
 
         public List<Equipement> Equipements
         {
@@ -43,9 +39,20 @@ namespace TA72.Controllers
             get { return Project.Desc; }
             set { Project.Desc = value; }
         }
+
+        public string Path
+        {
+            get { return Project.Path; }
+            set { Project.Path = value; }
+        }
         #endregion
 
         #region Functions
+        public void CreateProject(string name, string description)
+        {
+            this.Project = new Project(name, description);
+            Refresh();
+        }
         public void AddEquipement(Equipement equipement)
         {
             Project.Equipements.Add(equipement);
@@ -54,16 +61,36 @@ namespace TA72.Controllers
         {
             Project.Equipements.Remove(equipement);
         }
-        public void save()
+        public void Save()
         {
             Serializer serializer = new Serializer();
-            serializer.save(Project);
+            if (String.IsNullOrEmpty(Path))
+            {
+                this.SaveAs();
+            } else
+            {
+                serializer.Save(Project, Path);
+            }
         }
 
-        public void load(String path)
+        public void SaveAs()
         {
             Serializer serializer = new Serializer();
-            Project = serializer.load(path);
+            Path = serializer.Save(Project);
+        }
+
+        public void Load()
+        {
+            Serializer serializer = new Serializer();
+            serializer.Load(this);
+            Refresh();
+        }
+
+        public void Refresh()
+        {
+            Name = Project.Name;
+            Description = Project.Desc;
+            Equipements = Project.Equipements;
         }
         #endregion
 

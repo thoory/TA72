@@ -10,6 +10,7 @@ namespace TA72.Models
         public string Desc { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime Lastupdate { get; set; }
+        public string Path { get; set; }
         public List<Equipement> Equipements { get; set; }
 
         public Project(string name, string desc)

@@ -33,26 +33,20 @@ namespace TA72.Views
             CreateProjectWindow newProjectWindow = new CreateProjectWindow();
             if (newProjectWindow.ShowDialog() == true)
             {
-                projCtrl.Name = newProjectWindow.projName.Text;
-                projCtrl.Description = newProjectWindow.projDesc.Text;
+                projCtrl.CreateProject(newProjectWindow.projName.Text, newProjectWindow.projDesc.Text);
             }
         }
         private void mnuOpen_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "json (*.json)|*.json";
-            if (openFileDialog.ShowDialog() == true)
-            {
-                projCtrl.load(openFileDialog.FileName);
-            }
+            projCtrl.Load();
         }
         private void mnuSave_Click(object sender, RoutedEventArgs e)
         {
-            projCtrl.save();
+            projCtrl.Save();
         }
         private void mnuSaveAs_Click(object sender, RoutedEventArgs e)
         {
-            //ToDo
+            projCtrl.SaveAs();
         }
 
         private void DataGridScanPort_SelectionChanged(object sender, SelectionChangedEventArgs e)
