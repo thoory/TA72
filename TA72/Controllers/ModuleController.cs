@@ -14,38 +14,38 @@ namespace TA72.Controllers
 
         public void SetName(Module module, String name)
         {
-            module.name = name;
+            module.Name = name;
         }
         public String GetName(Module module)
         {
-            return module.name;
+            return module.Name;
         }
 
         public void SetPosX(Module module, int posX)
         {
-            module.posX = posX;
+            module.PosX = posX;
         }
         public int GetPosX(Module module)
         {
-            return module.posX;
+            return module.PosX;
         }
 
         public void SetPosY(Module module, int posY)
         {
-            module.posY = posY;
+            module.PosY = posY;
         }
         public int GetPosY(Module module)
         {
-            return module.posY;
+            return module.PosY;
         }
 
         public void SetImageId(Module module, int imageId)
         {
-            module.posY = imageId;
+            module.PosY = imageId;
         }
         public int GetImageId(Module module)
         {
-            return module.imageId;
+            return module.ImageId;
         }
 
     }

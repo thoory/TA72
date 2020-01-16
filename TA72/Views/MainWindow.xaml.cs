@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,39 +20,59 @@ namespace TA72.Views
     /// </summary>
     public partial class MainWindow : Window
     {
-        private ProjectController projCtrl = new ProjectController();
+        private AllDataContext dataCtrl = new AllDataContext();
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = projCtrl;
+            DataContext = dataCtrl;
         }
 
         private void MenuItem_Click(object sender, RoutedEventArgs e) { }
 
         private void mnuNew_Click(object sender, RoutedEventArgs e)
         {
-            CreateProjectWindow newProjectWindow = new CreateProjectWindow();
+            CreateProjectWindow newProjectWindow = new CreateProjectWindow(dataCtrl.ProjCtrl.Name, dataCtrl.ProjCtrl.Description, "Create");
             if (newProjectWindow.ShowDialog() == true)
             {
-                projCtrl.CreateProject(newProjectWindow.projName.Text, newProjectWindow.projDesc.Text);
+                dataCtrl.ProjCtrl.CreateProject(newProjectWindow.projName.Text, newProjectWindow.projDesc.Text);
             }
         }
         private void mnuOpen_Click(object sender, RoutedEventArgs e)
         {
-            projCtrl.Load();
+            dataCtrl.ProjCtrl.Load();
         }
         private void mnuSave_Click(object sender, RoutedEventArgs e)
         {
-            projCtrl.Save();
+            dataCtrl.ProjCtrl.Save();
         }
         private void mnuSaveAs_Click(object sender, RoutedEventArgs e)
         {
-            projCtrl.SaveAs();
+            dataCtrl.ProjCtrl.SaveAs();
+        }
+        private void mnuProjModify_Click(object sender, RoutedEventArgs e)
+        {
+            CreateProjectWindow newProjectWindow = new CreateProjectWindow(dataCtrl.ProjCtrl.Name, dataCtrl.ProjCtrl.Description, "Change");
+            if (newProjectWindow.ShowDialog() == true)
+            {
+                dataCtrl.ProjCtrl.Name = newProjectWindow.projName.Text;
+                dataCtrl.ProjCtrl.Description = newProjectWindow.projDesc.Text;
+            }
         }
 
-        private void DataGridScanPort_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void Refresh_Ip_Clik(object sender, RoutedEventArgs e)
         {
+            dataCtrl.NetCtrl.GetHostIp();
+        }
 
+        private void Launch_Scan_Click(object sender, RoutedEventArgs e)
+        {
+            dataCtrl.NetCtrl.NetworkScan();
+        }
+
+        private void cmbbxIpList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBox cmd = sender as ComboBox;
+            dataCtrl.NetCtrl.IpHost = cmd.SelectedItem as IPAddress;
         }
     }
 }

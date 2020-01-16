@@ -4,8 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TA72.Views"
+        xmlns:sdk="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
         mc:Ignorable="d"
-        Title="{Binding Name, StringFormat=Hector Network Assistant - {0}}" Height="450" Width="800">
+        Title="{Binding ProjCtrl.Name, StringFormat=Hector Network Assistant - {0}}" Height="450" Width="800">
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"></ColumnDefinition>
@@ -14,12 +16,15 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" ></RowDefinition>
+            <RowDefinition Height="auto" ></RowDefinition>
             <RowDefinition Height="*" ></RowDefinition>
+            <RowDefinition Height="auto" ></RowDefinition>
+            <RowDefinition Height="auto" ></RowDefinition>
             <RowDefinition Height="auto" ></RowDefinition>
         </Grid.RowDefinitions>
 
         <!-- Menu. -->
-        <DockPanel Grid.Column="1" Grid.ColumnSpan="2">
+        <DockPanel Grid.ColumnSpan="3">
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="_File">
                     <MenuItem Header="_New" Click="mnuNew_Click"/>
@@ -28,27 +33,114 @@
                     <MenuItem Header="_Save" Click="mnuSave_Click"/>
                     <MenuItem Header="Save as" Click="mnuSaveAs_Click"/>
                 </MenuItem>
+                <MenuItem Header="_Option">
+                    <MenuItem Header="Modify Project" Click="mnuProjModify_Click"/>
+                </MenuItem>
             </Menu>
         </DockPanel>
 
-        <!-- Scan -->
-        <TabControl TabStripPlacement="Top" Grid.Row="1" Grid.Column="2">
-            <TabItem Header="Network scan" >
-                <DataGrid Name="DataGridScanNet" AutoGenerateColumns="False">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Equipement" Binding="{Binding Prenom}" IsReadOnly="True"/>
-                        <DataGridTextColumn Header="Ip" Binding="{Binding Nom}" IsReadOnly="True"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </TabItem>
-            <TabItem Header="Network scan" >
-                <DataGrid Name="DataGridScanPort" AutoGenerateColumns="False" SelectionChanged="DataGridScanPort_SelectionChanged">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Equipement" Binding="{Binding TODO}" IsReadOnly="True"/>
-                        <DataGridTextColumn Header="Port" Binding="{Binding TODO}" IsReadOnly="True"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </TabItem>
-        </TabControl>
+        <Border Grid.Row="2" Grid.RowSpan="4" BorderBrush="Black" BorderThickness="0 0 1 0">
+            <Grid >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                    <ColumnDefinition Width="5"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <sdk:GridSplitter Grid.Column="2" Width="5" HorizontalAlignment="Right" VerticalAlignment="Stretch" />
+                <ListBox Name="lbEurInsuredType" HorizontalContentAlignment="Stretch">
+                    <ListBox.Template>
+                        <ControlTemplate>
+                            <DockPanel LastChildFill="True">
+                                <Grid DockPanel.Dock="Top" Height="30">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Grid.Column="0">Liste d'équipement</Label>
+                                </Grid>
+                                <ItemsPresenter></ItemsPresenter>
+                            </DockPanel>
+                        </ControlTemplate>
+                    </ListBox.Template>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="test" Grid.Row="4"></TextBlock>
+                                <TextBlock Text="{Binding Title}"></TextBlock>
+                                <TextBox Text="{Binding Uw}" Grid.Column="1"></TextBox>
+                                <TextBox Text="{Binding Partner}" Grid.Column="3"></TextBox>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="2" Grid.Column="3" BorderBrush="Black" BorderThickness="1 0 0 0">
+            <Grid DataContext="{Binding NetCtrl}" Margin=" 5 0 5 5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Label Content="Your Ip: "/>
+                <ComboBox Grid.Column="1" Name="cmbbxIpList" Margin="5" ItemsSource="{Binding IpHostList}" SelectedValue="{Binding IpHost}" SelectionChanged="cmbbxIpList_SelectionChanged"/>
+                <Button Grid.Column="1" Grid.Row="1" Margin="5" Click="Refresh_Ip_Clik">Refresh Ip</Button>
+                <Button Grid.Row="1" Margin="5" Click="Launch_Scan_Click">Scan</Button>
+
+                <!-- Scan -->
+                <DockPanel Grid.Row="2" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Height="auto">
+                    <TabControl TabStripPlacement="Top">
+                        <TabItem Header="Network scan" >
+                            <ListBox Margin="1" ItemsSource="{Binding IpFoundList}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </TabItem>
+                        <TabItem Header="Port scan" >
+                        </TabItem>
+                    </TabControl>
+                </DockPanel>
+            </Grid>
+        </Border>
+        
+        <Grid Grid.Row="2" Grid.Column="1" Margin="5 5 5 5">
+            <TextBlock>le milieu</TextBlock>
+        </Grid>
+
+        <Border Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="0 1 0 0">
+        <Grid VerticalAlignment="Bottom" Margin=" 5 0 5 5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="5"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.5*"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+                <Grid Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"></RowDefinition>
+                        <RowDefinition Height="auto"></RowDefinition>
+                        <RowDefinition Height="auto"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <TextBlock>Project informations:</TextBlock>
+                    <TextBlock Grid.Row="1" Text="{Binding ProjCtrl.Name, StringFormat=Name - {0}}"></TextBlock>
+                    <TextBlock Grid.Row="2" TextWrapping="Wrap" Text="{Binding ProjCtrl.Description, StringFormat=Description - {0}}"></TextBlock>
+                </Grid>
+                <sdk:GridSplitter Grid.ColumnSpan="3"/>
+            </Grid>
+        </Border>
     </Grid>
 </Window>

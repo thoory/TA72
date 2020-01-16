@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Net;
 using System.Text;
 using TA72.Models;
 
@@ -11,7 +12,7 @@ namespace TA72.Controllers
     {
         public ProjectController()
         {
-            Project = new Project("Unknown", "Uknown");
+            Project = new Project("Unknown", "Unknown");
         }
 
         #region Properties
@@ -36,8 +37,12 @@ namespace TA72.Controllers
 
         public string Description
         {
-            get { return Project.Desc; }
-            set { Project.Desc = value; }
+            get { return Project.Description; }
+            set
+            {
+                Project.Description = value;
+                RaisePropertyChanged("Description");
+            }
         }
 
         public string Path
@@ -89,7 +94,7 @@ namespace TA72.Controllers
         public void Refresh()
         {
             Name = Project.Name;
-            Description = Project.Desc;
+            Description = Project.Description;
             Equipements = Project.Equipements;
         }
         #endregion

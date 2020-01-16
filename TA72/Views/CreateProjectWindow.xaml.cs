@@ -7,9 +7,15 @@ namespace TA72.Views
     /// </summary>
     public partial class CreateProjectWindow : Window
     {
-        public CreateProjectWindow()
+        public CreateProjectWindow(string name, string description, string buttonValue)
         {
             InitializeComponent();
+            if(name != "Unknown" || description != "Unknown")
+            {
+                projName.Text = name;
+                projDesc.Text = description;
+            }
+            Validate.Content = buttonValue;
         }
         private void createProject(object sender, RoutedEventArgs e)
         {
