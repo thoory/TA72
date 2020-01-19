@@ -20,6 +20,7 @@ namespace TA72.Controllers
 
         #region Properties
         public Network Network { get; set; }
+        public List<int> _portScannedList;
 
         public IPAddress IpHost
         {
@@ -70,9 +71,60 @@ namespace TA72.Controllers
                 RaisePropertyChanged("IpFoundList");
             }
         }
+
+        public List<int> PortScannedList
+        {
+            get { return _portScannedList; }
+            set
+            {
+                _portScannedList = value;
+                RaisePropertyChanged("PortScannedList");
+            }
+        }
+
+        public List<int> PortList
+        {
+            get { return Network.PortList; }
+            set
+            {
+                Network.PortList = value;
+                RaisePropertyChanged("PortScan");
+            }
+        }
+
+        public List<int> _portToScan = new List<int> { 20, 21, 22, 23, 80, 8080 };
+        public List<int> PortToScan
+        { 
+            get { return _portToScan; }
+            set
+            {
+                _portScannedList = value;
+                RaisePropertyChanged("PortToScan");
+            }
+        }
         #endregion
 
         #region Public Funtions
+        public IPAddress StringtoIp(string ip)
+        {
+            IPAddress address;
+            if (IPAddress.TryParse(ip, out address))
+            {
+                switch (address.AddressFamily)
+                {
+                    case AddressFamily.InterNetwork:
+                        return IPAddress.Parse(ip);
+                        break;
+                    case AddressFamily.InterNetworkV6:
+                        return null;
+                        break;
+                    default:
+                        return null;
+                        break;
+                }
+            }
+            return null;
+        }
         public void GetHostIp()
         {
             if (NetworkInterface.GetIsNetworkAvailable() == true)
@@ -87,8 +139,9 @@ namespace TA72.Controllers
                         list.Add(ip);
                     }
                 }
-                IpHost = list.First();
+
                 IpHostList = list;
+                IpHost = list.First();
             }
         }
 
@@ -96,6 +149,46 @@ namespace TA72.Controllers
         {
             CalculIpRange();
             PingNetworkRange();
+        }
+
+        public void PortScan(IPAddress ipAddr)
+        {
+            List<int> portList = new List<int>();
+            foreach (int s in PortToScan)
+            {
+                using (TcpClient Scan = new TcpClient())
+                {
+                    try
+                    {
+                        Scan.Connect(ipAddr, s);
+                        portList.Add(s);
+                    }
+                    catch
+                    {
+                        System.Diagnostics.Trace.WriteLine($"[{s}] | Close");
+                    }
+                }
+            }
+            PortScannedList = portList;
+        }
+
+        public static bool Ping(IPAddress ip)
+        {
+            Ping ping = new Ping();
+            PingReply pingReply;
+
+            try
+            {
+                pingReply = ping.Send(ip.ToString(), 3);
+                if (pingReply != null &&
+                    pingReply.Status == IPStatus.Success)
+                    return true;
+            }
+            catch
+            {
+                return false;
+            }
+            return false;
         }
         #endregion
         #region Private Functions
@@ -122,41 +215,19 @@ namespace TA72.Controllers
             IpEnd = new IPAddress(endIPBytes);
         }
 
-        private void PortScan(IPAddress ipAddr)
-        {
-            //fonctionne mais prend du temps
-            int[] ports = new int[] { 80, 8080, 21, 22 };
-            foreach (int s in ports)
-            {
-                using (TcpClient Scan = new TcpClient())
-                {
-                    try
-                    {
-                        Scan.Connect(ipAddr, s);
-                        System.Diagnostics.Trace.WriteLine($"[{s}] | OPEN");
-                    }
-                    catch
-                    {
-                        System.Diagnostics.Trace.WriteLine($"[{s}] | OPEN");
-                    }
-                }
-            }
-        }
-
         private void PingNetworkRange()
         {
             var current = IpStart.GetAddressBytes();
             var end = IpEnd.GetAddressBytes();
             List<IPAddress> list = new List<IPAddress>();
 
-            foreach (byte secondPart in Enumerable.Range(current[1], end[1] - current[1] + 1))
+            foreach(byte secondPart in Enumerable.Range(current[1], end[1] - current[1] + 1))
             {
                 foreach (byte thirdPart in Enumerable.Range(current[2], end[2] - current[2] + 1))
                 {
                     foreach (byte fourthPart in Enumerable.Range(current[3], end[3] - current[3] + 1))
                     {
                         var ip = new IPAddress(new byte[] { current[0], secondPart, thirdPart, fourthPart });
-                        System.Diagnostics.Trace.WriteLine(ip.ToString());
                         if (Ping(ip))
                         {
                             list.Add(ip);
@@ -166,26 +237,7 @@ namespace TA72.Controllers
             }
             IpFoundList = list;
         }
-
-        public static bool Ping(IPAddress ip)
-        {
-            Ping ping = new Ping();
-            PingReply pingReply;
-
-            try
-            {
-                pingReply = ping.Send(ip.ToString(), 3);
-                if (pingReply != null &&
-                    pingReply.Status == IPStatus.Success)
-                    return true;
-            }
-            catch
-            {
-                return false;
-            }
-            return false;
-        }
-    #endregion
+        #endregion
 
         #region INotifyOrioertyChanged
         public event PropertyChangedEventHandler PropertyChanged;

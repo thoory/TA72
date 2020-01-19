@@ -1,7 +1,9 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Net;
 using System.Text;
 using TA72.Models;
@@ -12,16 +14,20 @@ namespace TA72.Controllers
     {
         public ProjectController()
         {
-            Project = new Project("Unknown", "Unknown");
+            Project = new Project("", "");
         }
 
         #region Properties
         public Project Project { get; set; }
 
-        public List<Equipement> Equipements
+        public ObservableCollection<Equipement> Equipements
         {
             get { return Project.Equipements; }
-            set {Project.Equipements = value; }
+            set
+            {
+                Project.Equipements = value;
+                RaisePropertyChanged("Equipements");
+            }
         }
 
         public string Name
@@ -60,11 +66,14 @@ namespace TA72.Controllers
         }
         public void AddEquipement(Equipement equipement)
         {
-            Project.Equipements.Add(equipement);
+            if (Equipements.Any(x => x.Ip == equipement.Ip && x.Name == equipement.Name) == false)
+                Project.Equipements.Add(equipement);
+            Refresh();
         }
         public void RemoveEquipement(Equipement equipement)
         {
             Project.Equipements.Remove(equipement);
+            Refresh();
         }
         public void Save()
         {
@@ -93,9 +102,9 @@ namespace TA72.Controllers
 
         public void Refresh()
         {
-            Name = Project.Name;
-            Description = Project.Description;
-            Equipements = Project.Equipements;
+            RaisePropertyChanged("Name");
+            RaisePropertyChanged("Description");
+            RaisePropertyChanged("Equipements");
         }
         #endregion
 

@@ -16,6 +16,7 @@ namespace TA72.Views
                 projDesc.Text = description;
             }
             Validate.Content = buttonValue;
+            projName.Focus();
         }
         private void createProject(object sender, RoutedEventArgs e)
         {

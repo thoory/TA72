@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Text;
@@ -7,29 +9,64 @@ using TA72.Models;
 
 namespace TA72.Controllers
 {
-    class EquipementController : ModuleController
+    class EquipementController : INotifyPropertyChanged
     {
-        public EquipementController() { }
+        public EquipementController() { Create(""); }
 
         #region Properties
-        public Equipement Equipement { get; set; }
+        private Equipement _equipement;
+        public Equipement Equipement
+        {
+            get { return _equipement; }
+            set
+            {
+                _equipement = value;
+                RaisePropertyChanged("Equipement");
+            }
+        }
+        public string Name
+        {
+            get { return Equipement.Name; }
+            set
+            {
+                Equipement.Name = value;
+                RaisePropertyChanged("Name");
+            }
+        }
+        public int ImageId
+        {
+            get { return Equipement.ImageId; }
+            set
+            {
+                Equipement.ImageId = value;
+                RaisePropertyChanged("ImageId");
+            }
+        }
         public string Type
         {
             get { return Equipement.Type; }
             set
             {
                 Equipement.Type = value;
-                Equipement.LastUpdate = DateTime.Now;
+                RaisePropertyChanged("Type");
             }
         }
-
+        public string MacAddress
+        {
+            get { return Equipement.MacAddress; }
+            set
+            {
+                Equipement.MacAddress = value;
+                RaisePropertyChanged("MacAddress");
+            }
+        }
         public string Os
         {
             get { return Equipement.Os; }
             set
             { 
                 Equipement.Os = value;
-                Equipement.LastUpdate = DateTime.Now;
+                RaisePropertyChanged("Os");
             }
         }
 
@@ -39,7 +76,7 @@ namespace TA72.Controllers
             set
             { 
                 Equipement.Version = value;
-                Equipement.LastUpdate = DateTime.Now;
+                RaisePropertyChanged("Version");
             }
         }
 
@@ -49,7 +86,17 @@ namespace TA72.Controllers
             set
             { 
                 Equipement.Ip = value;
-                Equipement.LastUpdate = DateTime.Now;
+                RaisePropertyChanged("Ip");
+            }
+        }
+
+        public string Notes
+        {
+            get { return Equipement.Notes; }
+            set
+            {
+                Equipement.Notes = value;
+                RaisePropertyChanged("Notes");
             }
         }
 
@@ -59,29 +106,73 @@ namespace TA72.Controllers
             set
             {
                 Equipement.IsActive = value;
-                Equipement.LastUpdate = DateTime.Now;
+                LastUpdate = DateTime.Now;
+                RaisePropertyChanged("IsActive");
+            }
+        }
+        public DateTime LastUpdate
+        {
+            get { return Equipement.LastUpdate; }
+            set
+            {
+                Equipement.LastUpdate = value;
+                RaisePropertyChanged("LastUpdate");
             }
         }
         #endregion
 
         #region Functions
-        public Equipement Create(string name)
+        public void Create(string name)
         {
-            return new Equipement(name);
+            this.Equipement = new Equipement(name);
         }
 
-        /*public void Delete(Equipement equipement)
+        public void Create(IPAddress ip)
         {
-            ProjectController projectController = new ProjectController();
-            projectController.RemoveEquipement(equipement);
-            return equipement;
-        }*/
+            if(ip != null)
+            {
+                Create(ip.ToString());
+                Equipement.Ip = ip;
+            }
+        }
 
+        public void DeleteFromProject(ProjectController projCtrl)
+        {
+            projCtrl.RemoveEquipement(Equipement);
+        }
+        public void AddToProject(ProjectController projCtrl)
+        {
+            projCtrl.AddEquipement(Equipement);
+        }
         public void IsActiveCheck()
         {
             IsActive = false;
             if (NetworkController.Ping(Ip))
                 IsActive = true;
+        }
+        public void IsActiveCheck(ProjectController projCtrl)
+        {
+            ObservableCollection<Equipement> list = new ObservableCollection<Equipement>();
+            foreach (Equipement e in projCtrl.Equipements)
+            {
+                if(e.Ip != null)
+                {
+                    Equipement = e;
+                    IsActiveCheck();
+                }
+                LastUpdate = DateTime.Now;
+                list.Add(e);
+            }
+            projCtrl.Equipements = list;
+        }
+        #endregion
+
+        #region PropertyChange
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void RaisePropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
     }

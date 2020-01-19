@@ -5,10 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TA72.Views"
         mc:Ignorable="d"
-        Title="Create a new project" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterOwner">
+        Title="Project Informations" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterOwner">
     <Grid Margin="15">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -20,13 +19,12 @@
             <ColumnDefinition Width="100" />
         </Grid.ColumnDefinitions>
 
-        <TextBlock>New project</TextBlock>
-        <TextBlock Grid.Row="1">Name:</TextBlock>
-        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Name="projName"></TextBox>
-        <TextBlock Grid.Row="2">Description:</TextBlock>
-        <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3"  Name="projDesc"></TextBox>
-        <Button Grid.Row="3" Grid.Column="1" Name="Validate" Click="createProject">create</Button>
-        <Button Grid.Row="3" Grid.Column="3" Click="cancel">close</Button>
+        <TextBlock>Name:</TextBlock>
+        <TextBox Grid.Column="1" Grid.ColumnSpan="3" Name="projName" Margin="5"></TextBox>
+        <TextBlock Grid.Row="1">Description:</TextBlock>
+        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"  Name="projDesc" Height="60" Margin="5" TextWrapping="Wrap"></TextBox>
+        <Button Grid.Row="2" Grid.Column="1" Margin="5" Name="Validate" Click="createProject">Apply</Button>
+        <Button Grid.Row="2" Grid.Column="3" Margin="5" Click="cancel">close</Button>
 
     </Grid>
 </Window>

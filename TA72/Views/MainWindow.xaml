@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:TA72.Views"
         xmlns:sdk="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
         mc:Ignorable="d"
-        Title="{Binding ProjCtrl.Name, StringFormat=Hector Network Assistant - {0}}" Height="450" Width="800">
+        Title="{Binding ProjCtrl.Name, StringFormat=Hector Network Assistant - {0}}" Height="450" Width="800" MinHeight="400" MinWidth="600">
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -18,9 +18,7 @@
             <RowDefinition Height="auto" ></RowDefinition>
             <RowDefinition Height="auto" ></RowDefinition>
             <RowDefinition Height="*" ></RowDefinition>
-            <RowDefinition Height="auto" ></RowDefinition>
-            <RowDefinition Height="auto" ></RowDefinition>
-            <RowDefinition Height="auto" ></RowDefinition>
+            <RowDefinition Height="150" ></RowDefinition>
         </Grid.RowDefinitions>
 
         <!-- Menu. -->
@@ -35,6 +33,7 @@
                 </MenuItem>
                 <MenuItem Header="_Option">
                     <MenuItem Header="Modify Project" Click="mnuProjModify_Click"/>
+                    <MenuItem Header="Add equipement" Click="mnuCreateEquipement"/>
                 </MenuItem>
             </Menu>
         </DockPanel>
@@ -89,15 +88,142 @@
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
                 <Label Content="Your Ip: "/>
-                <ComboBox Grid.Column="1" Name="cmbbxIpList" Margin="5" ItemsSource="{Binding IpHostList}" SelectedValue="{Binding IpHost}" SelectionChanged="cmbbxIpList_SelectionChanged"/>
+                <ComboBox Grid.Column="1" Name="cmbbxIpList" Margin="5" ItemsSource="{Binding IpHostList}" SelectedValue="{Binding IpHost}" SelectionChanged="cmbbxIpList_SelectionChanged" Width="110"/>
                 <Button Grid.Column="1" Grid.Row="1" Margin="5" Click="Refresh_Ip_Clik">Refresh Ip</Button>
                 <Button Grid.Row="1" Margin="5" Click="Launch_Scan_Click">Scan</Button>
 
                 <!-- Scan -->
                 <DockPanel Grid.Row="2" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Height="auto">
-                    <TabControl TabStripPlacement="Top">
+                    <TabControl TabStripPlacement="Top" Name="scanTabControl">
                         <TabItem Header="Network scan" >
-                            <ListBox Margin="1" ItemsSource="{Binding IpFoundList}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"></RowDefinition>
+                                    <RowDefinition Height="auto"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <ListBox Margin="1" Grid.ColumnSpan="2" Name="ScanList" ItemsSource="{Binding IpFoundList}">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                                <Button Grid.Row="1" Margin="2" Click="Add_Equipement_From_Scan_Click">Add Equipement</Button>
+                                <Button Grid.Row="1" Grid.Column="1" Margin="2" Click="Port_Scan_Click">Port Scan</Button>
+                            </Grid>
+                        </TabItem>
+                        <TabItem Header="Port scan" Name="PortTab">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"></RowDefinition>
+                                    <RowDefinition Height="auto"></RowDefinition>
+                                    <RowDefinition Height="*"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Label>Ip:</Label>
+                                <TextBox Grid.Column="1" Name="IpScanTextBox" Margin="5"/>
+                                <Button Grid.Column="2" Margin="5" Click="Scan_from_TextBox_Click">Scan</Button>
+                                <Label Name="ipInvalidPortScan" Grid.Row="1" Grid.ColumnSpan="3" Visibility="Collapsed">Invalid IP !</Label>
+                                <ListBox Margin="1" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" ItemsSource="{Binding PortScannedList}">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </Grid>
+                        </TabItem>
+                    </TabControl>
+                </DockPanel>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="2" Grid.Column="1" DataContext="{Binding ProjCtrl}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Button Content="+" Width="25" Height="25" Margin="2 5 2 5" Click="mnuCreateEquipement"></Button>
+                <Button Grid.Column="1" Width="25" Height="25" Content="-" Margin="2 5 2 5" Click="RemoveEquipement_Click"></Button>
+                <Button Grid.Column="2" Height="25" Content="Modify" Margin="2 5 2 5" Click="ModifyEquipement_Click"></Button>
+                <Button Grid.Column="3" Height="25" Content="Scan Port" Margin="2 5 2 5" Click="ScanPortFromMain_Click"></Button>
+                <Button Grid.Column="4" Height="25" Content="Refresh Status" Margin="2 5 2 5" HorizontalAlignment="Right" Click="RefreshStatus"></Button>
+            </Grid>
+            <Grid Grid.Row="1">
+                <DataGrid Name="EquipList" IsReadOnly="True" AutoGenerateColumns="False" ItemsSource="{Binding Equipements, Mode=OneWay}" SelectionMode="Single">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                        <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="*"/>
+                        <DataGridTextColumn Header="Ip" Binding="{Binding Ip}" Width="*"/>
+                        <DataGridTextColumn Header="Status" Binding="{Binding IsActive}" Width="*"/>
+                        <DataGridTextColumn Header="Last Check" Binding="{Binding LastUpdate, StringFormat=hh:mm}" Width="*"/>
+                    </DataGrid.Columns>
+                    <DataGrid.RowDetailsTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Notes}" Margin="10"  />
+                        </DataTemplate>
+                    </DataGrid.RowDetailsTemplate>
+                </DataGrid>
+            </Grid>
+        </Grid>
+
+        <Border Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="0 1 0 0">
+            <TabControl>
+                <TabItem Header="Projet Settings">
+                    <Grid Margin=" 5 0 5 5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="5"></RowDefinition>
+                            <RowDefinition Height="auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.5*"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="auto"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <sdk:GridSplitter Grid.ColumnSpan="3"/>
+                        <Grid Grid.Row="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"></RowDefinition>
+                                <RowDefinition Height="auto"></RowDefinition>
+                                <RowDefinition Height="auto"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <TextBlock>Description:</TextBlock>
+                            <TextBlock Grid.Row="1" Text="{Binding ProjCtrl.Name, StringFormat=Name: {0}}"></TextBlock>
+                            <TextBlock Grid.Row="2" TextWrapping="Wrap" Text="{Binding ProjCtrl.Description, StringFormat=Description: {0}}"></TextBlock>
+                        </Grid>
+                        <Grid Grid.Row="1" Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"></RowDefinition>
+                                <RowDefinition Height="auto"></RowDefinition>
+                                <RowDefinition Height="*"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"></ColumnDefinition>
+                                <ColumnDefinition Width="auto"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Visibility="Collapsed">Port scan list : </TextBlock>
+                            <ListBox Margin="1" Grid.Column="1" Grid.RowSpan="2" ItemsSource="{Binding NetCtrl.PortToScan}" Width="60" Visibility="Collapsed">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">
@@ -106,41 +232,12 @@
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                             </ListBox>
-                        </TabItem>
-                        <TabItem Header="Port scan" >
-                        </TabItem>
-                    </TabControl>
-                </DockPanel>
-            </Grid>
-        </Border>
-        
-        <Grid Grid.Row="2" Grid.Column="1" Margin="5 5 5 5">
-            <TextBlock>le milieu</TextBlock>
-        </Grid>
-
-        <Border Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="0 1 0 0">
-        <Grid VerticalAlignment="Bottom" Margin=" 5 0 5 5">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="5"></RowDefinition>
-                <RowDefinition Height="auto"></RowDefinition>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="0.5*"></ColumnDefinition>
-                <ColumnDefinition Width="*"></ColumnDefinition>
-                <ColumnDefinition Width="auto"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-                <Grid Grid.Row="1">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto"></RowDefinition>
-                        <RowDefinition Height="auto"></RowDefinition>
-                        <RowDefinition Height="auto"></RowDefinition>
-                    </Grid.RowDefinitions>
-                    <TextBlock>Project informations:</TextBlock>
-                    <TextBlock Grid.Row="1" Text="{Binding ProjCtrl.Name, StringFormat=Name - {0}}"></TextBlock>
-                    <TextBlock Grid.Row="2" TextWrapping="Wrap" Text="{Binding ProjCtrl.Description, StringFormat=Description - {0}}"></TextBlock>
-                </Grid>
-                <sdk:GridSplitter Grid.ColumnSpan="3"/>
-            </Grid>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Prompt ssh">
+                </TabItem>
+            </TabControl>
         </Border>
     </Grid>
 </Window>

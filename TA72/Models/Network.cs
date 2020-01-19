@@ -14,11 +14,13 @@ namespace TA72.Models
         public IPAddress IpEnd { get; set; }
         public List<IPAddress> IpHostList { get; set; }
         public List<IPAddress> IpFoundList { get; set; }
+        public List<int> PortList { get; set; }
 
         public Network()
         {
             IpFoundList = new List<IPAddress>();
             IpHostList = new List<IPAddress>();
+            PortList = new List<int>();
         }
     }
 }
