@@ -13,13 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using TA72.Controllers;
 using TA72.Models;
+using MahApps.Metro.Controls;
 
 namespace TA72.Views
 {
     /// <summary>
     /// Logique d'interaction pour MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         private AllDataContext dataCtrl = new AllDataContext();
         public MainWindow()
