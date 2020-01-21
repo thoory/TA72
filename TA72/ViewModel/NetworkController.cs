@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading.Tasks;
 using TA72.Models;
 
 namespace TA72.Controllers
@@ -14,6 +15,7 @@ namespace TA72.Controllers
     {
         public NetworkController()
         {
+            ScanNotRunning = true;
             Network = new Network();
             GetHostIp();
         }
@@ -102,6 +104,17 @@ namespace TA72.Controllers
                 RaisePropertyChanged("PortToScan");
             }
         }
+
+        private bool _ScanNotRunning;
+        public bool ScanNotRunning
+        {
+            get { return _ScanNotRunning; }
+            set 
+            {
+                _ScanNotRunning = value;
+                RaisePropertyChanged("ScanNotRunning");
+            }
+        }
         #endregion
 
         #region Public Funtions
@@ -114,13 +127,10 @@ namespace TA72.Controllers
                 {
                     case AddressFamily.InterNetwork:
                         return IPAddress.Parse(ip);
-                        break;
                     case AddressFamily.InterNetworkV6:
                         return null;
-                        break;
                     default:
                         return null;
-                        break;
                 }
             }
             return null;
@@ -145,50 +155,72 @@ namespace TA72.Controllers
             }
         }
 
-        public void NetworkScan()
+        public async Task<bool> NetworkScanAsync()
         {
+            ScanNotRunning = false;
             CalculIpRange();
-            PingNetworkRange();
+            var result = await PingNetworkRange();
+            ScanNotRunning = true;
+            return result;
         }
 
-        public void PortScan(IPAddress ipAddr)
+        public async Task PortScan(IPAddress ipAddr)
         {
+            ScanNotRunning = false;
+
+            List<Task<int>> portListTask = new List<Task<int>>();
             List<int> portList = new List<int>();
-            foreach (int s in PortToScan)
+
+            await Task.Run(() => {
+                foreach (int port in PortToScan)
+                {
+                    portListTask.Add(PortConnection(ipAddr, port));
+                }
+
+                Task.WaitAll(portListTask.ToArray());
+
+                foreach (var port in portListTask)
+                {
+                    if (port.Result != 0)
+                        portList.Add(port.Result);
+                }
+            });
+            
+            PortScannedList = portList;
+            ScanNotRunning = true;
+        }
+
+        public async Task<int> PortConnection(IPAddress ipAddr, int port)
+        {
+            int res = 0;
+            await Task.Run(() =>
             {
                 using (TcpClient Scan = new TcpClient())
                 {
                     try
                     {
-                        Scan.Connect(ipAddr, s);
-                        portList.Add(s);
+                        Scan.Connect(ipAddr, port);
+                        res = port;
                     }
                     catch
                     {
-                        System.Diagnostics.Trace.WriteLine($"[{s}] | Close");
+                        System.Diagnostics.Trace.WriteLine($"[{port}] | Close");
                     }
                 }
-            }
-            PortScannedList = portList;
+            });
+            return res;
         }
 
-        public static bool Ping(IPAddress ip)
+        public Task<PingReply> Ping(IPAddress ip)
         {
+            var tcs = new TaskCompletionSource<PingReply>();
             Ping ping = new Ping();
-            PingReply pingReply;
-
-            try
+            ping.PingCompleted += (obj, sender) =>
             {
-                pingReply = ping.Send(ip.ToString(), 3);
-                if (pingReply != null &&
-                    pingReply.Status == IPStatus.Success)
-                    return true;
-            }
-            catch
-            {
-                return false;
-            }
-            return false;
+                tcs.SetResult(sender.Reply);
+            };
+            ping.SendAsync(ip, new object());
+            return tcs.Task;
         }
         #endregion
         #region Private Functions
@@ -215,27 +247,37 @@ namespace TA72.Controllers
             IpEnd = new IPAddress(endIPBytes);
         }
 
-        private void PingNetworkRange()
+        private async Task<bool> PingNetworkRange()
         {
+            bool result = false;
             var current = IpStart.GetAddressBytes();
             var end = IpEnd.GetAddressBytes();
+            List<Task<PingReply>> pingTasks = new List<Task<PingReply>>();
             List<IPAddress> list = new List<IPAddress>();
 
-            foreach(byte secondPart in Enumerable.Range(current[1], end[1] - current[1] + 1))
-            {
-                foreach (byte thirdPart in Enumerable.Range(current[2], end[2] - current[2] + 1))
+            await Task.Run(() => {
+                foreach (byte secondPart in Enumerable.Range(current[1], end[1] - current[1] + 1))
                 {
-                    foreach (byte fourthPart in Enumerable.Range(current[3], end[3] - current[3] + 1))
+                    foreach (byte thirdPart in Enumerable.Range(current[2], end[2] - current[2] + 1))
                     {
-                        var ip = new IPAddress(new byte[] { current[0], secondPart, thirdPart, fourthPart });
-                        if (Ping(ip))
+                        foreach (byte fourthPart in Enumerable.Range(current[3], end[3] - current[3] + 1))
                         {
-                            list.Add(ip);
+                            var ip = new IPAddress(new byte[] { current[0], secondPart, thirdPart, fourthPart });
+                            pingTasks.Add(Ping(ip));
                         }
                     }
                 }
-            }
+
+                Task.WaitAll(pingTasks.ToArray());
+
+                foreach (var pingTask in pingTasks)
+                {
+                    if(pingTask.Result.Status == IPStatus.Success)
+                        list.Add(pingTask.Result.Address);
+                }
+            });
             IpFoundList = list;
+            return result;
         }
         #endregion
 

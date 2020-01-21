@@ -16,9 +16,6 @@ namespace TA72.Controllers
             ProjCtrl = new ProjectController();
             NetCtrl = new NetworkController();
             EquiCtrl = new EquipementController();
-
-            EquiCtrl.Create("coucou");
-            EquiCtrl.AddToProject(ProjCtrl);
         }
     }
 }

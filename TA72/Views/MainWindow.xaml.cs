@@ -33,7 +33,7 @@ namespace TA72.Views
 
         private void mnuNew_Click(object sender, RoutedEventArgs e)
         {
-            CreateProjectWindow newProjectWindow = new CreateProjectWindow(dataCtrl.ProjCtrl.Name, dataCtrl.ProjCtrl.Description, "Create");
+            CreateProjectWindow newProjectWindow = new CreateProjectWindow("", "", "Create");
             if (newProjectWindow.ShowDialog() == true)
             {
                 dataCtrl.ProjCtrl.CreateProject(newProjectWindow.projName.Text, newProjectWindow.projDesc.Text);
@@ -76,9 +76,11 @@ namespace TA72.Views
             dataCtrl.NetCtrl.GetHostIp();
         }
 
-        private void Launch_Scan_Click(object sender, RoutedEventArgs e)
+        private async void Launch_Scan_ClickAsync(object sender, RoutedEventArgs e)
         {
-            dataCtrl.NetCtrl.NetworkScan();
+            ScanList.Visibility = Visibility.Hidden;
+            bool err = await dataCtrl.NetCtrl.NetworkScanAsync();
+            ScanList.Visibility = Visibility.Visible;
         }
 
         private void cmbbxIpList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -89,17 +91,21 @@ namespace TA72.Views
 
         private void Port_Scan_Click(object sender, RoutedEventArgs e)
         {
-            ipInvalidPortScan.Visibility = Visibility.Collapsed;
-            IpScanTextBox.Text = ScanList.SelectedItem.ToString();
-            Dispatcher.BeginInvoke((Action)(() => scanTabControl.SelectedIndex = 1));
-            dataCtrl.NetCtrl.PortScan(ScanList.SelectedItem as IPAddress);
+            if(ScanList.SelectedItem != null)
+            {
+                ipInvalidPortScan.Visibility = Visibility.Collapsed;
+                IpScanTextBox.Text = ScanList.SelectedItem.ToString();
+                Dispatcher.BeginInvoke((Action)(() => scanTabControl.SelectedIndex = 1));
+                PortScan(ScanList.SelectedItem as IPAddress);
+                
+            }
         }
         private void Scan_from_TextBox_Click(object sender, RoutedEventArgs e)
         {
             ScanList.SelectedItem = -1;
             if(dataCtrl.NetCtrl.StringtoIp(IpScanTextBox.Text) != null) {
                 ipInvalidPortScan.Visibility = Visibility.Collapsed;
-                dataCtrl.NetCtrl.PortScan(dataCtrl.NetCtrl.StringtoIp(IpScanTextBox.Text));
+                PortScan(dataCtrl.NetCtrl.StringtoIp(IpScanTextBox.Text));
             } else {
                 ipInvalidPortScan.Visibility = Visibility.Visible;
             }
@@ -110,6 +116,7 @@ namespace TA72.Views
         {
             IPAddress ip = ScanList.SelectedItem as IPAddress;
             dataCtrl.EquiCtrl.Create(ip);
+            dataCtrl.EquiCtrl.Ip = ip;
             dataCtrl.EquiCtrl.AddToProject(dataCtrl.ProjCtrl);
         }
         
@@ -158,7 +165,7 @@ namespace TA72.Views
                     ipInvalidPortScan.Visibility = Visibility.Collapsed;
                     IpScanTextBox.Text = dataCtrl.EquiCtrl.Ip.ToString();
                     Dispatcher.BeginInvoke((Action)(() => scanTabControl.SelectedIndex = 1));
-                    dataCtrl.NetCtrl.PortScan(dataCtrl.EquiCtrl.Ip);
+                    PortScan(dataCtrl.EquiCtrl.Ip);
                 }
             }
         }
@@ -173,6 +180,13 @@ namespace TA72.Views
             dataCtrl.EquiCtrl.Notes = window.Notes.Text;
             dataCtrl.EquiCtrl.Ip = dataCtrl.NetCtrl.StringtoIp(window.Ip.Text);
             dataCtrl.EquiCtrl.IsActiveCheck();
+        }
+
+        private async void PortScan(IPAddress ip)
+        {
+            ScanPortList.Visibility = Visibility.Hidden;
+            await dataCtrl.NetCtrl.PortScan(ip);
+            ScanPortList.Visibility = Visibility.Visible;
         }
         private bool SetSelectedEquip()
         {

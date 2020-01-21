@@ -147,8 +147,8 @@ namespace TA72.Controllers
         public void IsActiveCheck()
         {
             IsActive = false;
-            if (NetworkController.Ping(Ip))
-                IsActive = true;
+            if (Ping(Ip))
+              IsActive = true;
         }
         public void IsActiveCheck(ProjectController projCtrl)
         {
@@ -164,6 +164,25 @@ namespace TA72.Controllers
                 list.Add(e);
             }
             projCtrl.Equipements = list;
+        }
+
+        public bool Ping(IPAddress ip)
+        {
+            Ping ping = new Ping();
+            PingReply pingReply;
+
+            try
+            {
+                pingReply = ping.Send(ip.ToString(), 3);
+                if (pingReply != null &&
+                    pingReply.Status == IPStatus.Success)
+                    return true;
+            }
+            catch
+            {
+                return false;
+            }
+            return false;
         }
         #endregion
 
